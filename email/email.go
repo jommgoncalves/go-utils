@@ -18,26 +18,29 @@ type Configs struct {
 	To       []string
 }
 
-// SendWithoutAuthentication Sends E-mail without authentication.
-func SendWithoutAuthentication(configs Configs, subject string, bodyHTML string) {
-	// Convert [string,string,...] to "string,string,..""
-	var toString string
-	for i, e := range configs.To {
-		if i == len(configs.To)-1 {
-			toString += e
+// sliceToString Converts [string,string,...] to "string,string,.."".
+func sliceToString(slice []string) string {
+	var result string
+	for i, e := range slice {
+		if i == len(slice)-1 {
+			result += e
 		} else {
-			toString += e + ","
+			result += e + ","
 		}
 	}
+	return result
+}
 
+// SendWithoutAuthentication Sends E-mail without authentication.
+func SendWithoutAuthentication(configs Configs, subject string, bodyHTML string) {
 	// Set headers.
 	headerMap := map[string]string{}
 	headerMap["Content-Type"] = "text/html"
 	headerMap["Charset"] = "UTF-8"
 	headerMap["Subject"] = subject
 	headerMap["Date"] = time.Now().String()
-	headerMap["From"] = "deliverynotify@movvo.com"
-	headerMap["To"] = toString
+	headerMap["From"] = configs.From
+	headerMap["To"] = sliceToString(configs.To)
 
 	// Create headers.
 	header := ""
